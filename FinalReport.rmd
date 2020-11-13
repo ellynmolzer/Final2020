@@ -1,14 +1,17 @@
 ---
 title: "Covid91 vaccine study Final2020"
-author: "Put your name here!"
-date: "put the date here"
+author: "Ellyn Molzer"
+date: "November 13, 2020"
 output: html_document
 ---
 
 ```{r include=FALSE,echo=FALSE}
 require(tidyverse)
 require(tigerstats)
-TrialData <-read.csv(file="covid91.csv",header=TRUE)
+require(forcats)
+OldData <-read.csv(file="covid91.csv",header=TRUE)
+#recode aids to say covid and then remove the annoying "X" from the dataframe
+FinalData <- OldData %>% mutate(infected = recode(infected, aids = "covid", none = "OK" )) %>% select(-one_of("X"))
 ```
 
 # Introduction
@@ -17,16 +20,136 @@ TrialData <-read.csv(file="covid91.csv",header=TRUE)
 
 A new  preventative vaccine (covid91) is under test in clinical trials. Given the nature of this vaccine it is suspected that the drug may exhibit different effectiveness across the variety of subpopulations tracked. Consider population subgroups by gender( guys and gals), drug use, and sexual orientation. Write a complete report that separately considers this drug for each subgroup and your recommendations as to whether people in the subgroup should take the vaccine.
 
+
+$H_0$: Among the targeted population, the drug has NO effect in preventing COVID.  
+
+$H_A$: Among the targeted population the vaccine does have an effect in preventing COVID.    
+
 # Methods
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method. Discuss what data manipulations may be needed for example subsetting or other binning procedures and what sort of graphical displays and inferential tools will be used!-->
+
+The Data Analysis to use is cat~cat summary 
 
 # Results
 
 <!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
 
+# Descriptive Results 
 
+# Graphical Results 
+# Female Report
+```{r}
+DataF= filter(FinalData, sex== "gal")
+barchartGC(~infected + treatment,data=DataF)
+barchartGC(~infected + treatment,data=DataF, type="percent", main="Gal")
+```
+
+The females who did contracted COVID-19, is twice as many took the placebo, it kind of appears that the vaccine DOES have an effect that prevents females from getting Covid.    
+
+#Numerical summary  
+The Numerical summary we see that Females who took the drug only 33.11 got infected with covid-19 and 50.31 who also took the vaccine were okay. The vaccine has a positive effect on the females.  
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=DataF)
+rowPerc(table1)
+colPerc(table1)
+```
+
+
+#Inferential  
+
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+``` 
+This Chi Square tests goes into detail and gave a P. Value of 2.2e-16<0.05. It shows that the vaccine did make have an effect on the female population. 
+
+## Male Report  
+```{r}
+DataG= filter(FinalData, sex== "guy")
+barchartGC(~infected + treatment,data=DataG)
+barchartGC(~infected + treatment,data=DataG, type="percent", main= "guys")
+```
+The vaccine has a negative effect on the guys population, they seem to be more likely to get Covid because they received the vaccine.  
+ 
+# Numerical Summary  
+The Numerical summary shows Males who took the drug 58.16 got infected with covid and 48.54 who also took the vaccine were okay. This vaccine had a negative effect on the Male population.  
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=DataG)
+rowPerc(table1)
+colPerc(table1)
+```
+
+#Inferential  
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+The Chi Square tests goes into detail and gave a P. Value of 0.0005801<0.05. It shows us that the vaccine did have an effect on the Males population.
+
+
+# LGBTQ community    
+```{r}
+DataLGBTQ= filter(FinalData, LGBTQ== "gay")
+barchartGC(~infected + treatment,data=DataLGBTQ)
+barchartGC(~infected + treatment,data=DataLGBTQ, type="percent", main="LGBTQ")
+```
+The vaccine has a negative effect on the LGBTQ population, because they are likely getting Covid since they received the vaccine.
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=DataLGBTQ)
+rowPerc(table1)
+colPerc(table1)
+```
+The Numerical summary it's seen that The LGBTQ population who did take the drug 70.69 got infected with covid and 49.17 who also took the vaccine were okay. Resulting in a  negative effect on the LGBTQ pop. 
+
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+THe Chi Square tests goes into detail and gave a P. Value of 5.741e-06<0.05. It shows that vaccine did have an effect on the LGBTQ population.
+
+#DRUG USERS
+```{r}
+DataDrugUser= filter(FinalData, DrugUser== "yes")
+barchartGC(~infected + treatment,data=DataDrugUser)
+barchartGC(~infected + treatment,data=DataDrugUser, type="percent", main="DrugUser")
+```
+The vaccine has a negative effect on the Drug users population, since they are likely contracting Covid since they received the vaccine.  
+ 
+
+```{r}
+table1 <- xtabs(~infected + treatment, data=DataDrugUser)
+rowPerc(table1)
+colPerc(table1)
+```
+The Numerical summary we can see that The Drug User population who took the drug 33.33 got infected with covid-19 and 47.83 who also took the vaccine were ok. This vaccine has a Negative effect on the Drug User population. This results came a little close, but it still shows a negative effect among drug users.  
+
+```{r}
+chisq.test(table1)
+chisqtestGC(table1)
+fisher.test(table1)
+```
+The Chi Square tests goes into detail and gave a P. Value of 0.002273<0.05. It shows us that the vaccine did have a affect on the Drug User pop.
 
 # Discussion and Conclusion
-
 <!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
+
+The charts and the numerical results state, that the females that took the drug are less likely to contract COVID. Women who took the drug only 33.11 got infected and 50.31 According to the inferential test that was 95.56% that were not infected making the vaccine very effective among the female population. 
+The p. Value<2.2e-16, so we reject the null Hypothesis, the vaccine DID have an effect on the Female pop and it was positive for females and it helped them not get Covid. 
+
+According to the male data and numerical results, male who took the vaccine were contracting covid, 58.16 of the males who took the treatment contracted covid and only 48.54 were healthy. From that data it seems that men are most likely to contract covid with the given vaccine.
+The P.Value was of 6e-04<0.05, We reject the null hypothesis, the vaccine had an effect in whether males contracted the virus. It had a negative effect and if the males took the vaccine there was a high chance that they contracted Covid.
+
+The LGBTQ data 70.69 contracted COVID-19 with the treatment and only  49.17 did not contract the virus with the vaccine. From this data it seems that the vaccine had no positive effect in the LGBTQ community and people were still contracting the virus. The P. Value was 1.05e-05, which is less than 0.05, we reject the null hypothesis The vaccine did have an effect whether LGBTQ  contracted Covid, it was a negative effect because it seemed that with the vaccine they still contracted Covid.
+
+According to the data from the Drug Users 33.33 contracted covid with the treatment and 47.83 did not contract the virus with the treatment. On this Drug User data we came a little bit close to having the same results from people infected and people who got covid-19, but if we take a look at the P. Value of the chi square, we can now determine the effect of the vaccine. Since the p value is 0.002273<0.05 then we Reject the Null hypothesis and we can say that the vaccine did have an effect in whether Drug Users contracted covid .It was negative because Drug Users still contracted COVID19 with the vaccine.
+
